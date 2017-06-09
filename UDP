@@ -1,0 +1,38 @@
+ 
+ 
+ 
+ UDP server                                       UDP client
+                                
+  socket()                                          socket()
+     |                                                 |
+     |                                                 |
+     |                                                 |
+  bind()                                               |                                         
+     |                                                 |
+     |                                                 |
+     |                                                 |
+  recvfrom(), with block mode                       sendto()
+     |                                                 |
+     |                                                 |
+     |                                                 |
+  process received message                             |
+     |                                                 |
+     |                                                 |
+     |                                                 |
+  sendto()                                          recvfrom()
+                                                       |
+                                                       |
+                                                       |
+                                                     close()
+                                                     
+main API                                                     
+socket(AF_INET,SOCK_DGRAM,0)        //AF_INET, the internet IP protocol, SOCK_DGRAM, UDP protocol
+  struct sockaddr_in  add;
+  addrlen=sizeof(struct sockaddr_in);
+  bzero(&ser_addr,addrlen);
+  ser_addr.sin_family=AF_INET;
+  ser_addr.sin_addr.s_addr=htonl(INADDR_ANY);           //INADDR_ANY, can receive data from any IP and port
+  ser_addr.sin_port=htons(SERVER_PORT);                 //port
+bind(sockfd,(struct sockaddr *)&ser_addr,addrlen)
+recvfrom(sockfd,buff,sizeof(buff),0,(struct sockaddr*)&addr,&len)       //receive data first, and addr parameter can save the sender's IP and port
+sendto(sockfd,buff,sizeof(buff),0,(struct sockaddr*)&addr,len)          //send data, and the addr is the addr saved from recvfrom API, it's the receiver's IP and port.
